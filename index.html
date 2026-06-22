@@ -295,6 +295,37 @@
             </div>
         </div>
 
+        <!-- 7. Eyesight Simulation (NEW) -->
+        <div class="glass-card p-6 md:p-8 transition-opacity duration-500">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-100 p-3 rounded-full text-indigo-600 text-xl">👀</div>
+                    <h2 class="text-xl font-bold text-slate-800">아이의 시야 시뮬레이션</h2>
+                </div>
+                <span class="text-xs font-bold bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full" id="eyesight-badge">현재 개월 수</span>
+            </div>
+            <p class="text-sm text-slate-600 mb-6">신생아는 흑백으로 희미하게 보이다가, 서서히 색채와 형태를 뚜렷하게 구분하게 됩니다. 슬라이더를 움직여 개월 수에 따른 시력 발달 과정을 확인해 보세요.</p>
+
+            <!-- 이미지 영역 (비율 943:627) -->
+            <div class="relative w-full overflow-hidden rounded-xl bg-slate-200 shadow-inner border border-slate-200/50 flex items-center justify-center" style="aspect-ratio: 943 / 627;">
+                <!-- 로컬 이미지가 없을 경우를 대비해 onerror로 플레이스홀더를 제공합니다 -->
+                <img id="eyesight-image" src="eyesights/m0.jpg" alt="개월수별 시야 시뮬레이션" class="object-cover w-full h-full transition-opacity duration-300" onerror="this.src='https://placehold.co/943x627/e2e8f0/64748b?text=Image+Not+Found'">
+            </div>
+
+            <!-- 컨트롤 슬라이더 -->
+            <div class="mt-6 bg-slate-50 p-4 md:p-5 rounded-xl border border-slate-100 shadow-sm">
+                <input type="range" id="eyesight-slider" min="0" max="12" value="0" class="w-full h-2 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                <div class="flex justify-between text-xs text-slate-400 mt-2 font-medium px-1">
+                    <span>0m</span>
+                    <span>3m</span>
+                    <span>6m</span>
+                    <span>9m</span>
+                    <span>12m</span>
+                </div>
+                <p class="text-center text-sm font-bold text-indigo-700 mt-4" id="eyesight-slider-label">생후 0개월의 시야</p>
+            </div>
+        </div>
+
         <footer class="text-center text-slate-400 text-xs mt-8 pb-8">
             본 대시보드는 대한민국 소아청소년과 가이드라인 및 아동 심리발달 통계를 바탕으로 작성되었으나, 아기들의 발달은 개인차가 큽니다.<br>질병이 의심되거나 성장이 눈에 띄게 지연될 경우 반드시 소아과 전문의와 상담하시기 바랍니다.
         </footer>
@@ -613,6 +644,44 @@
                 p.innerHTML = `<span class="text-rose-400 mt-0.5">✔</span> <span>${item}</span>`;
                 tipsDiv.appendChild(p);
             });
+
+            // 시야 시뮬레이션 동적 제어 로직
+            const cappedMonth = Math.min(Math.max(0, months), 12); // 최대 12개월까지만 매핑
+            
+            const eyesightSlider = document.getElementById('eyesight-slider');
+            const eyesightImage = document.getElementById('eyesight-image');
+            const eyesightLabel = document.getElementById('eyesight-slider-label');
+            const eyesightBadge = document.getElementById('eyesight-badge');
+
+            // 현재 실제 개월 수로 초기 셋팅
+            eyesightSlider.value = cappedMonth;
+            eyesightBadge.innerText = `현재 생후 만 ${months}개월`;
+            updateEyesight(cappedMonth);
+
+            // 슬라이더 이동 시 이미지/텍스트 업데이트
+            eyesightSlider.addEventListener('input', function(e) {
+                updateEyesight(e.target.value);
+            });
+
+            function updateEyesight(m) {
+                // 부드러운 이미지 교체를 위한 투명도 조절
+                eyesightImage.style.opacity = 0.5; 
+                setTimeout(() => {
+                    eyesightImage.src = `eyesights/m${m}.jpg`;
+                    eyesightImage.style.opacity = 1;
+                }, 150);
+                
+                // 시력 발달 상태에 따른 부가 설명 동적 처리
+                let labelStr = `생후 ${m}개월의 시야`;
+                if(m == 0) labelStr = "생후 0개월 - 흑백으로 보이며 20~30cm 앞만 희미하게 보여요";
+                else if(m == 1 || m == 2) labelStr = `생후 ${m}개월 - 서서히 색을 구분하고 눈을 맞추기 시작해요`;
+                else if(m >= 3 && m <= 5) labelStr = `생후 ${m}개월 - 입체감이 생기고 움직이는 물체를 잘 따라가요`;
+                else if(m >= 6 && m <= 8) labelStr = `생후 ${m}개월 - 양안 시력이 발달하여 원근감이 아주 뚜렷해져요`;
+                else if(m >= 9 && m <= 11) labelStr = `생후 ${m}개월 - 작은 물건도 정확히 인지할 만큼 시력이 발달했어요`;
+                else if(m == 12) labelStr = "생후 12개월 - 성인 시력의 기초가 완성되는 시기예요";
+                
+                eyesightLabel.innerText = labelStr;
+            }
         }
 
         function animateValue(id, start, end, duration) {
