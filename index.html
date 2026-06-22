@@ -197,6 +197,77 @@
                 </div>
             </div>
 
+            <!-- 7. 예방접종 D-Day 캘린더 (NEW) -->
+            <div class="glass-card p-6 md:col-span-2 lg:col-span-2 flex flex-col h-full">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="bg-blue-100 p-3 rounded-full text-blue-600 text-xl">💉</div>
+                    <h2 class="text-xl font-bold text-slate-800">예방접종 D-Day 캘린더</h2>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">* 질병관리청 표준 일정표 기준 (접종 당일 아기 컨디션에 따라 조절하세요)</p>
+                <div class="space-y-3 flex-grow custom-scrollbar overflow-y-auto pr-2" id="vaccine-list">
+                    <!-- JS Injection -->
+                </div>
+            </div>
+
+            <!-- 8. 응급상황 & 핫라인 (NEW) -->
+            <div class="glass-card p-6 md:col-span-1 lg:col-span-1 flex flex-col h-full border border-red-200 bg-red-50/20 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-red-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+                <div class="flex items-center gap-3 mb-4 z-10">
+                    <div class="bg-red-100 p-3 rounded-full text-red-600 text-xl">🚨</div>
+                    <h2 class="text-xl font-bold text-slate-800">건강·응급 핫라인</h2>
+                </div>
+                <p class="text-xs text-red-500 font-semibold mb-4 z-10">야간/휴일에 아플 때 당황하지 마세요!</p>
+                
+                <div class="flex-grow space-y-4 custom-scrollbar overflow-y-auto pr-2 z-10">
+                    <div class="bg-white rounded-xl p-4 border border-red-100 shadow-sm">
+                        <h3 class="text-sm font-bold text-red-600 flex justify-between items-center mb-2">
+                            <span>🌙 전주 달빛어린이병원</span>
+                            <span class="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full">야간·휴일 소아진료</span>
+                        </h3>
+                        <ul class="text-xs text-slate-600 space-y-2 font-medium">
+                            <li class="flex flex-col">
+                                <span class="text-slate-800">대자인병원 (우아동3가)</span>
+                                <span>📞 063-240-2000</span>
+                            </li>
+                            <li class="flex flex-col border-t border-slate-100 pt-2">
+                                <span class="text-slate-800">전주다솔아동병원 (효자동2가)</span>
+                                <span>📞 063-280-0800</span>
+                            </li>
+                            <li class="flex flex-col border-t border-slate-100 pt-2">
+                                <span class="text-slate-800">올키즈365소아청소년과 (송천동2가)</span>
+                                <span>📞 063-715-1365</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-4 border border-red-100 shadow-sm">
+                        <h3 class="text-sm font-bold text-orange-600 mb-2">🚑 정읍/진안 지역 응급실</h3>
+                        <ul class="text-xs text-slate-600 space-y-2 font-medium">
+                            <li class="flex flex-col">
+                                <span class="text-slate-800">정읍아산병원 응급센터</span>
+                                <a href="tel:063-530-6129" class="hover:text-blue-500 transition-colors">📞 063-530-6129</a>
+                            </li>
+                            <li class="flex flex-col border-t border-slate-100 pt-2">
+                                <span class="text-slate-800">진안군의료원 응급실</span>
+                                <a href="tel:063-430-7119" class="hover:text-blue-500 transition-colors">📞 063-430-7119</a>
+                            </li>
+                            <li class="text-[10px] text-orange-500 mt-2 leading-relaxed bg-orange-50 p-2 rounded border border-orange-100">
+                                * 정읍/진안 야간 응급실은 소아전문의가 부재할 수 있으니 출발 전 진료 가능 여부를 꼭 전화로 먼저 확인하세요.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <a href="tel:119" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center py-2.5 rounded-lg font-bold text-sm transition-colors shadow-md">
+                            119 구급대
+                        </a>
+                        <a href="tel:129" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white text-center py-2.5 rounded-lg font-bold text-sm transition-colors shadow-md">
+                            129 보건상담
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- 수유 백과사전 (0~6개월 전용) -->
@@ -378,6 +449,17 @@
             erikson: "<strong>자율성 대 수치심 (1~3세 시작)</strong>: 내 맘대로 해보려는 고집이 생깁니다. 스스로 걷고 탐색하도록 안전한 환경에서 격려해주세요.",
             piaget: "<strong>감각운동기 후기</strong>: 원인과 결과를 이해하기 시작하고, 도구를 사용하여 원하는 것을 얻으려 시도합니다."
         };
+
+        // [신규] 질병관리청 표준 예방접종 일정 데이터 (생후 일수 기준)
+        const vaccines = [
+            { name: "결핵(BCG, 1회용)", targetDays: 21 }, // 생후 4주 이내 권장
+            { name: "B형간염 (2차)", targetDays: 30 }, // 1개월
+            { name: "DTaP, 폴리오, 로타바이러스 (1차)", targetDays: 60 }, // 2개월
+            { name: "DTaP, 폴리오, 로타바이러스 (2차)", targetDays: 120 }, // 4개월
+            { name: "DTaP, 폴리오, B형간염 (3차)", targetDays: 180 }, // 6개월
+            { name: "독감(인플루엔자) 1차", targetDays: 180 }, // 6개월 이후 가을/겨울
+            { name: "수두, MMR, 일본뇌염 (1차)", targetDays: 365 } // 12~15개월 돌 접종
+        ];
 
         // 0~53주 세밀한 주차별 육아 데이터 매핑
         const pediatricData = [
@@ -644,6 +726,52 @@
                 p.innerHTML = `<span class="text-rose-400 mt-0.5">✔</span> <span>${item}</span>`;
                 tipsDiv.appendChild(p);
             });
+
+            // 예방접종 캘린더 렌더링
+            const vaxList = document.getElementById('vaccine-list');
+            if(vaxList) {
+                vaxList.innerHTML = '';
+                vaccines.forEach(vax => {
+                    // 기준: 생일 + 권장일수
+                    const vaxDate = new Date(birth.getTime() + (vax.targetDays * 24 * 60 * 60 * 1000));
+                    const vDiffTime = vaxDate.getTime() - today.getTime();
+                    const vDiffDays = Math.ceil(vDiffTime / (1000 * 60 * 60 * 24));
+                    
+                    let badgeClass = "";
+                    let dDayText = "";
+                    let isCompleted = false;
+
+                    // D-Day 상태 표시 로직
+                    if (vDiffDays > 14) {
+                        badgeClass = "bg-blue-100 text-blue-600 font-semibold";
+                        dDayText = `D-${vDiffDays}`;
+                    } else if (vDiffDays >= 0 && vDiffDays <= 14) {
+                        // 접종일이 2주 이내로 다가오면 빨간색으로 펄스 애니메이션!
+                        badgeClass = "bg-rose-500 text-white font-bold animate-pulse shadow-sm";
+                        dDayText = vDiffDays === 0 ? "D-Day" : `D-${vDiffDays}`;
+                    } else if (vDiffDays < 0 && vDiffDays >= -30) {
+                        badgeClass = "bg-emerald-100 text-emerald-600 font-bold";
+                        dDayText = "접종기간";
+                    } else {
+                        badgeClass = "bg-slate-100 text-slate-400";
+                        dDayText = "시기경과";
+                        isCompleted = true;
+                    }
+
+                    const formattedDate = vaxDate.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+
+                    const div = document.createElement('div');
+                    div.className = `flex justify-between items-center p-3 rounded-xl border ${isCompleted ? 'bg-slate-50 border-slate-100 opacity-60' : 'bg-white border-blue-100 shadow-sm'}`;
+                    div.innerHTML = `
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-slate-800 ${isCompleted ? 'line-through decoration-slate-300' : ''}">${vax.name}</span>
+                            <span class="text-xs text-slate-400">${formattedDate} 경</span>
+                        </div>
+                        <span class="text-xs px-3 py-1 rounded-full ${badgeClass}">${dDayText}</span>
+                    `;
+                    vaxList.appendChild(div);
+                });
+            }
 
             // 시야 시뮬레이션 동적 제어 로직
             const cappedMonth = Math.min(Math.max(0, months), 12); // 최대 12개월까지만 매핑
