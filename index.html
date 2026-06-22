@@ -693,11 +693,12 @@
             }
 
             // 일반 계산
+            const displayDays = diffDays + 1; // 한국 육아 기준 태어난 당일이 생후 1일차
             const weeks = Math.floor(diffDays / 7) + 1; // 실생활 기준인 n번째 주(주차)로 표기하기 위해 +1
             const months = Math.floor(diffDays / 30.436875); // 개월 수는 통상적으로 '만 개월' 사용
 
             // 애니메이션
-            animateValue('days-old', 0, diffDays, 1000);
+            animateValue('days-old', 0, displayDays, 1000);
             document.getElementById('weeks-old').innerText = weeks;
             document.getElementById('months-old').innerText = months;
 
