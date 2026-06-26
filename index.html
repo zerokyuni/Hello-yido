@@ -104,6 +104,32 @@
                 </div>
             </div>
 
+            <!-- 1.5. Vitals & Poop (NEW) -->
+            <div class="glass-card p-6 flex flex-col h-full border border-pink-100 bg-white">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="bg-pink-100 p-3 rounded-full text-pink-600 text-xl">🌡️</div>
+                    <h2 class="text-xl font-bold text-slate-800">기초 건강 (체온·배변)</h2>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">* 기초 체온과 배변 양상은 건강의 핵심 지표입니다.</p>
+
+                <div class="space-y-4 flex-grow">
+                    <div class="bg-pink-50 rounded-xl p-4 flex justify-between items-center">
+                        <span class="font-semibold text-slate-600">정상 평균 체온</span>
+                        <span class="text-xl font-bold text-pink-700" id="avg-temp">36.5 ~ 37.5℃</span>
+                    </div>
+                    <div class="bg-amber-50 rounded-xl p-4 flex justify-between items-center">
+                        <span class="font-semibold text-slate-600 text-sm">평균 배변</span>
+                        <div class="text-right w-2/3">
+                            <span class="text-lg font-bold text-amber-700" id="avg-poop">- 회</span>
+                            <p class="text-[11px] text-amber-600 mt-1 leading-tight font-medium" id="poop-desc">-</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 text-[11px] text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 font-medium leading-relaxed">
+                    🚨 <strong>생후 100일 미만 발열 주의:</strong> 접종과 무관하게 체온이 <span class="font-bold underline text-red-700">38.0℃ 이상</span> 오르면, 뇌수막염/요로감염 등 중증 감염증일 수 있으니 <span class="font-bold">지체 없이 대학병원 응급실</span>로 가야 합니다!
+                </div>
+            </div>
+
             <!-- 2. Feeding Guide -->
             <div class="glass-card p-6 flex flex-col h-full">
                 <div class="flex items-center gap-3 mb-4">
@@ -467,6 +493,18 @@
     <script>
         const birthDate = new Date('2026-06-09T00:00:00'); // 아기 생일
 
+        // [질병관리청 표준 예방접종 일정 데이터]
+        const vaccines = [
+            { name: "B형 간염 1차", targetDays: 0 },
+            { name: "결핵(BCG) (생후 4주 이내)", targetDays: 21 }, // 조리원 퇴소 무렵
+            { name: "B형 간염 2차 (생후 1개월)", targetDays: 30 },
+            { name: "DTaP, 폴리오, PCV, 로타 1차", targetDays: 60 }, // 2개월
+            { name: "DTaP, 폴리오, PCV, 로타 2차", targetDays: 120 }, // 4개월
+            { name: "B형 간염 3차, PCV 등 3차", targetDays: 180 }, // 6개월
+            { name: "독감(인플루엔자) 생애 첫 접종", targetDays: 200 }, // 생후 6개월 이후
+            { name: "돌 접종 (MMR, 수두, 일본뇌염 등)", targetDays: 365 } // 12개월
+        ];
+
         // [공통 심리 발달 데이터 템플릿]
         const psycho0to6m = {
             freud: "<strong>구강기 (0~1세)</strong>: 입과 입술을 통해 세상을 탐색하고 만족감을 느낍니다. 수유와 공갈젖꼭지 등 입의 자극이 정서적 안정에 매우 중요합니다.",
@@ -484,22 +522,12 @@
             piaget: "<strong>감각운동기 후기</strong>: 원인과 결과를 이해하기 시작하고, 도구를 사용하여 원하는 것을 얻으려 시도합니다."
         };
 
-        // [신규] 질병관리청 표준 예방접종 일정 데이터 (생후 일수 기준)
-        const vaccines = [
-            { name: "결핵(BCG, 1회용)", targetDays: 21 }, // 생후 4주 이내 권장
-            { name: "B형간염 (2차)", targetDays: 30 }, // 1개월
-            { name: "DTaP, 폴리오, 로타바이러스 (1차)", targetDays: 60 }, // 2개월
-            { name: "DTaP, 폴리오, 로타바이러스 (2차)", targetDays: 120 }, // 4개월
-            { name: "DTaP, 폴리오, B형간염 (3차)", targetDays: 180 }, // 6개월
-            { name: "독감(인플루엔자) 1차", targetDays: 180 }, // 6개월 이후 가을/겨울
-            { name: "수두, MMR, 일본뇌염 (1차)", targetDays: 365 } // 12~15개월 돌 접종
-        ];
-
         // 0~53주 세밀한 주차별 육아 데이터 매핑
         const pediatricData = [
             {
                 minDay: 0, maxDay: 6, // 0주차
                 weight: "3.3", height: "49.9",
+                temp: "36.5 ~ 37.5℃", poop: "하루 3~10회", poopDesc: "출생 직후 끈적한 암녹색 태변 배출 후, 점차 노란색 전이변으로 바뀝니다.",
                 feedAmount: "60 ~ 90", feedTimes: "8 ~ 12", feedMax: "800",
                 sleepTotal: "16 ~ 20",
                 sleepPattern: "하루 종일 먹고 자는 시기입니다. 아직 밤낮을 구분하지 못해 1~2시간마다 깹니다.",
@@ -511,6 +539,7 @@
             {
                 minDay: 7, maxDay: 13, // 1주차 (생후 2주 시작)
                 weight: "3.4", height: "51.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 2~8회 이상", poopDesc: "모유수유아는 수시로 지릴 수 있으며(황금빛/머스터드색), 분유수유아는 1~4회(녹변/황색)로 횟수가 덜할 수 있습니다.",
                 feedAmount: "60 ~ 80", feedTimes: "7 ~ 8", feedMax: "640",
                 sleepTotal: "16 ~ 18",
                 sleepPattern: "수유 텀이 약간 잡히기 시작하지만 여전히 수시로 먹고 잡니다. 최대 4시간 텀을 넘기지 마세요.",
@@ -522,6 +551,7 @@
             {
                 minDay: 14, maxDay: 27, // 2~3주차 (생후 2~4주)
                 weight: "4.2", height: "53.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~8회", poopDesc: "모유는 묽은 변을 자주 보고, 분유는 약간 되직할 수 있습니다. 하얀 알갱이는 미처 소화 안 된 지방이므로 정상입니다.",
                 feedAmount: "80 ~ 120", feedTimes: "6", feedMax: "720",
                 sleepTotal: "15 ~ 18",
                 sleepPattern: "먹고 자는 시간이 규칙을 띠려 하지만 영아 산통(배앓이)으로 저녁에 심하게 울 수 있습니다.",
@@ -533,6 +563,7 @@
             {
                 minDay: 28, maxDay: 60, // 4~8주차 (생후 1~2개월)
                 weight: "5.4", height: "56.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~4회", poopDesc: "아기 장이 길어지면서 변 보는 횟수가 확 줍니다. 모유수유아는 일주일 이상 안 싸기도 하나, 잘 먹고 잘 논다면 정상입니다.",
                 feedAmount: "120 ~ 140", feedTimes: "6", feedMax: "840 ~ 1000",
                 sleepTotal: "14 ~ 17",
                 sleepPattern: "밤에 자는 시간이 길어집니다(통잠의 조짐). 잘 잔다면 신생아 때처럼 깨워서 먹일 필요 없이 한 텀 건너뛰어도 됩니다.",
@@ -544,6 +575,7 @@
             {
                 minDay: 61, maxDay: 90, // 9~12주차 (생후 2~3개월)
                 weight: "6.1", height: "60.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "수유량이 일정해지며 배변 패턴도 꽤 규칙적으로 변합니다. 분유수유아는 변비에 주의하세요.",
                 feedAmount: "140 ~ 160", feedTimes: "6", feedMax: "960 ~ 1080",
                 sleepTotal: "14 ~ 15",
                 sleepPattern: "수면 의식(목욕->마사지->자장가)을 만들기 좋은 시기입니다. 올바른 수유&수면 습관을 잡아주세요.",
@@ -555,6 +587,7 @@
             {
                 minDay: 91, maxDay: 120, // 13~17주차 (생후 3~4개월)
                 weight: "6.6", height: "63.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "녹변은 담즙이 산화된 것으로 정상입니다. 단, 콧물처럼 끈적한 점액변이 피와 섞여 나오면 장염을 의심하세요.",
                 feedAmount: "180 ~ 210", feedTimes: "5 ~ 6", feedMax: "800 ~ 1000",
                 sleepTotal: "14 ~ 15",
                 sleepPattern: "백일의 기적! 낮잠 횟수가 줄어들고 밤에 꽤 길게 잘 수 있습니다.",
@@ -566,6 +599,7 @@
             {
                 minDay: 121, maxDay: 150, // 18~21주차 (생후 4~5개월)
                 weight: "7.1", height: "65.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "침을 많이 삼켜 변이 약간 묽어지기도 합니다. 컨디션이 좋다면 크게 걱정할 필요 없습니다.",
                 feedAmount: "180 ~ 210", feedTimes: "5 ~ 6", feedMax: "800 ~ 1000",
                 sleepTotal: "13 ~ 14",
                 sleepPattern: "이앓이나 발달 급성장기로 인해 잘 자던 아기가 새벽에 깨는 '수면 퇴행'이 올 수 있습니다.",
@@ -577,6 +611,7 @@
             {
                 minDay: 151, maxDay: 180, // 22~26주차 (생후 5~6개월)
                 weight: "7.5", height: "67.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "초기 이유식을 시작하면서 수분이 줄고 고형물이 섞여 처음으로 변이 되직해질 수 있습니다.",
                 feedAmount: "180 ~ 210", feedTimes: "3 ~ 4", feedMax: "800 ~ 940",
                 sleepTotal: "13 ~ 14",
                 sleepPattern: "밤중 수유를 본격적으로 끊어야 하는 시점입니다. 밤에 깨더라도 수유 대신 토닥여서 재워보세요.",
@@ -588,6 +623,7 @@
             {
                 minDay: 181, maxDay: 210, // 27~30주차 (생후 6~7개월)
                 weight: "7.9", height: "69.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "중기 이유식 시작. 당근, 시금치 등 채소가 소화되지 않고 변에 그대로 섞여 나오기도 하나 정상입니다.",
                 feedAmount: "이유식 중기 1~2회", feedTimes: "수유 3~4회", feedMax: "수유 800ml 내외",
                 sleepTotal: "12 ~ 14",
                 sleepPattern: "낮잠은 2회 정도로 줄어들고 밤에 10시간 이상 통잠을 잡니다.",
@@ -599,6 +635,7 @@
             {
                 minDay: 211, maxDay: 240, // 31~34주차 (생후 7~8개월)
                 weight: "8.3", height: "70.5",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "이유식 양이 늘어 변 냄새가 성인과 비슷하게 독해집니다. 물을 충분히 섭취하게 해주세요.",
                 feedAmount: "이유식 중기 2회", feedTimes: "수유 3~4회", feedMax: "수유 700ml 내외",
                 sleepTotal: "12 ~ 14",
                 sleepPattern: "수면 패턴이 거의 성인과 비슷하게 고정됩니다.",
@@ -610,6 +647,7 @@
             {
                 minDay: 241, maxDay: 270, // 35~38주차 (생후 8~9개월)
                 weight: "8.6", height: "72.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "수분 섭취가 부족하면 토끼똥 같은 둥글고 단단한 변을 볼 수 있습니다. 퓨레나 물로 수분을 보충하세요.",
                 feedAmount: "이유식 후기 3회", feedTimes: "수유 2~3회", feedMax: "수유 600ml 내외",
                 sleepTotal: "12 ~ 14",
                 sleepPattern: "이앓이가 심해져 자다 울며 깰 수 있습니다. 잇몸 마사지를 해주세요.",
@@ -621,6 +659,7 @@
             {
                 minDay: 271, maxDay: 300, // 39~43주차 (생후 9~10개월)
                 weight: "8.9", height: "73.5",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "후기 이유식(진밥)으로 넘어가면서 어른과 비슷한 질감의 배변을 합니다.",
                 feedAmount: "이유식 후기 3회", feedTimes: "수유 2~3회", feedMax: "수유 500~600ml",
                 sleepTotal: "12 ~ 13",
                 sleepPattern: "밤잠 10-11시간, 낮잠 2회로 매우 규칙적입니다.",
@@ -632,6 +671,7 @@
             {
                 minDay: 301, maxDay: 330, // 44~47주차 (생후 10~11개월)
                 weight: "9.2", height: "74.8",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "기저귀 안이 불편함을 느끼기 시작합니다. 배변 후 칭얼거리면 즉시 갈아주세요.",
                 feedAmount: "완료기 이유식 3회", feedTimes: "간식 및 우유", feedMax: "분유/우유 400~500ml",
                 sleepTotal: "12 ~ 13",
                 sleepPattern: "활동량이 많아 깊이 잡니다. 낮잠이 1회로 줄어들 준비를 합니다.",
@@ -643,6 +683,7 @@
             {
                 minDay: 331, maxDay: 364, // 48~52주차 (생후 11~12개월 돌 직전)
                 weight: "9.5", height: "76.0",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "소화력이 훌륭해져 유아식 식단에 적응하며 안정적인 배변을 보입니다.",
                 feedAmount: "유아식(진밥) 3회", feedTimes: "간식 2회", feedMax: "생우유/분유 400ml",
                 sleepTotal: "11 ~ 13",
                 sleepPattern: "수면 거부가 생길 수 있습니다. 일관된 수면 의식을 유지하세요.",
@@ -654,6 +695,7 @@
             {
                 minDay: 365, maxDay: 377, // 52~53주차 (돌 주간 및 직후)
                 weight: "9.6+", height: "76.5+",
+                temp: "36.5 ~ 37.5℃", poop: "하루 1~2회", poopDesc: "돌 이후 배변 훈련을 조금씩 도입할 수 있습니다. 냄비 등 변기 모양 장난감과 친해지게 하세요.",
                 feedAmount: "유아식 3끼", feedTimes: "간식 2회", feedMax: "생우유 400ml",
                 sleepTotal: "11 ~ 13",
                 sleepPattern: "낮잠은 하루 1번으로 고정되며 밤에 아주 잘 잡니다.",
@@ -729,6 +771,11 @@
             document.getElementById('avg-weight').innerText = currentData.weight + (currentData.weight.includes('+') ? "" : " kg");
             document.getElementById('avg-height').innerText = currentData.height + (currentData.height.includes('+') ? "" : " cm");
             document.getElementById('growth-tip').innerHTML = currentData.growthTip;
+
+            // 기초 건강 (NEW)
+            document.getElementById('avg-temp').innerText = currentData.temp;
+            document.getElementById('avg-poop').innerText = currentData.poop;
+            document.getElementById('poop-desc').innerText = currentData.poopDesc;
 
             document.getElementById('feed-amount').innerText = currentData.feedAmount + (currentData.feedAmount.includes('회') ? "" : " ml");
             document.getElementById('feed-times').innerText = currentData.feedTimes + (currentData.feedTimes.includes('회') ? "" : " 회");
